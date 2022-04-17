@@ -7,6 +7,11 @@ const routes = [
     name: 'home',
     component: HomeView
   },
+  {
+    path: '/recipe/:slug',
+    name: 'Recipe',
+    component: () => import('@/views/Recipe.vue')
+  },
 ]
 
 const router = createRouter({
