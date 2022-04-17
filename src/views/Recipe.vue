@@ -4,7 +4,7 @@
       <!-- <h1>{{ $route.params.slug }}</h1> -->
 
       <h1>{{ recipe.title }}</h1>
-      <p class="description">{{ recipe.descriptio }}</p>
+      <p class="description">{{ recipe.description }}</p>
       <hr />
 
       <div class="ingredients">
