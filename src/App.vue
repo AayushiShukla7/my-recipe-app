@@ -14,7 +14,7 @@ body {
   color: #FFF;
 }
 a {
-  color: #2aeb74;
+  color: #f4937b;
   text-decoration: none;
 }
 button {
@@ -22,7 +22,7 @@ button {
   border: none;
   background: none;
   cursor: pointer;
-  background-color: #2aeb74;
+  background-color: #f4937b;
   font-size: 1.125rem;
   color: #030e1b;
   padding: 0.5rem 1rem;
