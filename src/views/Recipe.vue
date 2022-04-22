@@ -2,7 +2,7 @@
   <div class="recipe">
       <div class="space-between">
         <router-link to="/">&lt; Back</router-link>
-        <button type="button" @click="isEditing = !isEditing" v-if="!isEditing">Edit</button>        
+        <button type="button" @click="isEditing = !isEditing" v-if="!isEditing">Inline Edit</button>        
       </div>
 
       <div class="align-right">
