@@ -158,6 +158,7 @@ export default {
       }
 
       this.$store.commit('ADD_RECIPE', { ...this.newRecipe }); //Destructure object before passing
+      //this.$store.commit('addRecipe', this.newRecipe);
 
       //Reset values to what they were originally
       this.newRecipe = {
@@ -194,7 +195,7 @@ export default {
     // });
     // const popupOpen = ref(false);
     // const popupEdit = ref(false);
-    const store = useStore(); //Gives us access to our store object
+    //const store = useStore(); //Gives us access to our store object
 
     //'.value' is necesary to access the actual value inside a ref object
     // const togglePopup = () => {
@@ -253,7 +254,7 @@ export default {
     // };
   },
   created() {
-    this.$store.dispatch('getRecipes');
+    //this.$store.dispatch('getRecipes');
   },
   computed: {
     recipes() {

@@ -1,4 +1,5 @@
 import { createStore } from 'vuex'
+import { idb } from '@/api/idb'
 
 export default createStore({
   state: {
@@ -58,11 +59,27 @@ export default createStore({
   getters: {
   },
   mutations: {
-    ADD_RECIPE (state, recipe) {
-      state.recipes.push(recipe);
+    ADD_RECIPE (recipe) {
+      this.state.recipes.push(recipe);
     }
   },
   actions: {
+    async deleteRecipe(recipe) {
+      console.log('store is being asked to delete ' + recipe.id);
+      await idb.deleteRecipe(recipe); 
+    },
+
+    async getRecipes() {
+      this.state.recipes = [];
+      let recipes = await idb.getRecipes();
+      recipes.forEach(r => {
+        this.state.recipes.push(r);
+      });
+    },
+
+    async saveRecipe(recipe) {
+      await idb.saveRecipe(recipe);
+    }
   },
   modules: {
   }
