@@ -102,13 +102,11 @@
 </template>
 
 <script>
-//import { stringifyQuery } from 'vue-router';
-//import { ref } from 'vue';  //To get the Reference Composition API component
-import { useStore } from 'vuex';
-// import { idb } from '@/api/idb'
+//import IndexedDBService from '@/api/IndexedDBService'
+import { getters } from '@/store';
 
-const DB_NAME = 'recipedb';
-const DB_VERSION = 1;
+// const DB_NAME = 'recipedb';
+// const DB_VERSION = 1;
 
 export default {
   name: 'HomeView',
@@ -135,7 +133,6 @@ export default {
       db:null,
       ready:false,
       addDisabled:false,
-      //recipes: [],
     }
   },
   methods: {
@@ -241,15 +238,11 @@ export default {
   },
   computed: {
     recipes: function() {
-      return this.$store.getters.getRecipes;
+      return this.$store.state.recipes;
     }
   },
   created() {
-    //this.$store.dispatch('getRecipes');
-
-    // this.db = await this.getDb();
-    // this.recipes = await this.getRecipesFromDb();
-    // this.ready = true;
+    this.$store.dispatch('getRecipes');
   },
 }
 </script>
