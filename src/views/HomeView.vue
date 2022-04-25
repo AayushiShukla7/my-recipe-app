@@ -102,8 +102,13 @@
 </template>
 
 <script>
+//import { stringifyQuery } from 'vue-router';
 //import { ref } from 'vue';  //To get the Reference Composition API component
 import { useStore } from 'vuex';
+// import { idb } from '@/api/idb'
+
+const DB_NAME = 'recipedb';
+const DB_VERSION = 1;
 
 export default {
   name: 'HomeView',
@@ -127,11 +132,13 @@ export default {
       },
       popupOpen: false,
       popupEdit: false,
-
+      db:null,
+      ready:false,
+      addDisabled:false,
+      //recipes: [],
     }
   },
   methods: {
-    //'.value' is necesary to access the actual value inside a ref object
     togglePopup() {
       this.popupOpen = !this.popupOpen;
     },
@@ -148,118 +155,101 @@ export default {
       this.newRecipe.methodRows++;
     },
 
-    //Store usage
-    addNewRecipe() {
-      this.newRecipe.slug = this.newRecipe.title.toLowerCase().replace(/\s/g, '-');
-
-      if(this.newRecipe.slug == '') {
-        alert('Please enter a title');
-        return;
-      }
-
-      this.$store.commit('ADD_RECIPE', { ...this.newRecipe }); //Destructure object before passing
-      //this.$store.commit('addRecipe', this.newRecipe);
-
-      //Reset values to what they were originally
-      this.newRecipe = {
-        title: '',
-        description: '',
-        ingredients: [],
-        method: [],
-        ingredientRows: 1,
-        methodRows: 1
-      };
-
-      this.togglePopup();
-    },
-
-    editSelectedRecipe() {
-      this.togglePopupEdit();
-      $emit('edit', this.editRecipe);
-    },
-
-    async deleteRecipe(recipe) {
-      console.log('delete', recipe.slug);
-      await this.$store.dispatch('deleteRecipe', recipe);
-      this.$store.dispatch('getRecipes');
-    },
-  },
-  setup() {
-    // const newRecipe = ref({
-    //   title: '',
-    //   description: '',
-    //   ingredients: [],
-    //   method: [],
-    //   ingredientRows: 1,
-    //   methodRows: 1
-    // });
-    // const popupOpen = ref(false);
-    // const popupEdit = ref(false);
-    //const store = useStore(); //Gives us access to our store object
-
-    //'.value' is necesary to access the actual value inside a ref object
-    // const togglePopup = () => {
-    //   popupOpen.value = !popupOpen.value;
-    // };
-    // const togglePopupEdit = () => {
-    //   popupEdit.value = !popupEdit.value;
-    // };
-
-    // const addNewIngredient = () => {
-    //   newRecipe.value.ingredientRows++;
-    // };
-
-    // const addNewStep = () => {
-    //   newRecipe.value.methodRows++;
-    // };
-
-    // //Store usage
-    // const addNewRecipe = () => {
-    //   newRecipe.value.slug = newRecipe.value.title.toLowerCase().replace(/\s/g, '-');
-
-    //   if(newRecipe.value.slug == '') {
-    //     alert('Please enter a title');
-    //     return;
-    //   }
-
-    //   store.commit('ADD_RECIPE', { ...newRecipe.value }); //Destructure object before passing
-
-    //   //Reset values to what they were originally
-    //   newRecipe.value = {
-    //     title: '',
-    //     description: '',
-    //     ingredients: [],
-    //     method: [],
-    //     ingredientRows: 1,
-    //     methodRows: 1
+    // async getDb() {
+    //   return new Promise((resolve, reject) => {	
+    //   let request = window.indexedDB.open(DB_NAME, DB_VERSION);
+      
+    //   request.onerror = e => {
+    //     console.log('Error opening db', e);
+    //     reject('Error');
     //   };
+    
+    //   request.onsuccess = e => {
+    //     resolve(e.target.result);
+    //   };
+      
+    //   request.onupgradeneeded = e => {
+    //     console.log('onupgradeneeded');
+    //     let db = e.target.result;
+    //     let objectStore = db.createObjectStore("recipes", { autoIncrement: true, keyPath:'id' });
+    //   };
+    //   });
+    // },
 
-    //   togglePopup();
-    // };
+    // async getRecipesFromDb() {
+    //   return new Promise((resolve, reject) => {
+    
+    //     let trans = this.db.transaction(['recipes'],'readonly');
+    //     trans.oncomplete = e => {
+    //       resolve(recipes);
+    //     };
+        
+    //     let store = trans.objectStore('recipes');
+    //     let recipes = [];
+        
+    //     store.openCursor().onsuccess = e => {
+    //       let cursor = e.target.result;
+    //       if (cursor) {
+    //         recipes.push(cursor.value)
+    //         cursor.continue();
+    //       }
+    //     };
+    
+    //   });
+    // },
 
-    // const editRecipe = () => {
-    //   togglePopupEdit();
-    //   $emit('edit',recipe);
-    // };
+    // async addRecipe() {
+    //   this.addDisabled = true;
+    //   // random recipe for now
+    //   let recipesFromStore = this.$store.state
+    //   console.log('about to add '+JSON.stringify(recipe));
+    //   await this.addRecipeToDb(recipe);
+    //   this.recipes = await this.getRecipesFromDb();
+    //   this.addDisabled = false;      
+    // },
 
-    // return {
-    //   newRecipe,
-    //   togglePopup,
-    //   togglePopupEdit,
-    //   popupOpen,
-    //   addNewIngredient,
-    //   addNewStep,
-    //   addNewRecipe,
-    //   editRecipe
-    // };
+    // async addRecipeToDb(recipe) {
+    //   return new Promise((resolve, reject) => {
+    
+    //   let trans = this.db.transaction(['recipes'],'readwrite');
+    //   trans.oncomplete = e => {
+    //     resolve();
+    //   };
+    
+    //   let store = trans.objectStore('recipes');
+    //   store.add(recipe);
+    
+    //   });
+    // },
+
+    // async deleteRecipe(id) {
+    //   await this.deleteRecipeFromDb(id);
+    //   this.recipes = await this.getRecipesFromDb();      
+    // },
+
+    // async deleteRecipeFromDb(id) {
+    //   return new Promise((resolve, reject) => {
+    //   let trans = this.db.transaction(['recipes'],'readwrite');
+    //   trans.oncomplete = e => {
+    //     resolve();
+    //   };
+    
+    //   let store = trans.objectStore('recipes');
+    //   store.delete(id);
+    //   });
+    // },
+  },
+  computed: {
+    recipes: function() {
+      return this.$store.getters.getRecipes;
+    }
   },
   created() {
     //this.$store.dispatch('getRecipes');
-  },
-  computed: {
-    recipes() {
-      return this.$store.state.recipes;
-    }
+
+    // this.db = await this.getDb();
+    // this.recipes = await this.getRecipesFromDb();
+    // this.ready = true;
   },
 }
 </script>
