@@ -2,24 +2,23 @@ const DB_NAME = 'recipedb';
 const DB_VERSION = 1;
 let objectStore;
 let recipes = [];
-let shouldInitDb = true;
 
 export const IndexedDBService = {
 
 	async getDb() {
+		var shouldInitDb = true;
+
 		return new Promise((resolve, reject) => {
 			console.log('OPENING DB');	
-			let request = window.indexedDB.open(DB_NAME, DB_VERSION);
+			let request = window.indexedDB.open(DB_NAME, DB_VERSION);			
 			
 			request.onerror = e => {
 				console.log('Error opening db', e);
 				reject('Error');
 			};
 		
-			request.onsuccess = e => {
-				resolve(e.target.result);
-				if(shouldInitDb) 	//executes only if DB init happened
-					db_Populate();	//close the db first and then call init
+			request.onsuccess = e => {				
+				resolve(e.target.result);				
 			};
 			
 			request.onupgradeneeded = e => {
@@ -27,7 +26,12 @@ export const IndexedDBService = {
 				let db = e.target.result;
 				objectStore = db.createObjectStore("recipes", { keyPath:'slug' });
 				//objectStore = db.createObjectStore("recipes", { autoIncrement: true, keyPath:'id' });
-				objectStore.createIndex("slug", "slug", {unique: true});				
+				objectStore.createIndex("slug", "slug", {unique: true});	
+				
+				if(shouldInitDb) { 	//executes only if DB init happened
+					this.db_Populate();	//close the db first and then call init
+					this.shouldInitDb = false;
+				}
 			};
 		});
 	},
@@ -90,8 +94,6 @@ export const IndexedDBService = {
 		defRecipes.forEach(r => {
 			this.addRecipe(r);
 		});
-
-		this.shouldInitDb = false;
 	},
 
 	async getRecipes() {
