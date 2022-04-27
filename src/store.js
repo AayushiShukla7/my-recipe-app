@@ -9,23 +9,34 @@ export default new Vuex.Store({
   mutations: {
 
   },
-  actions: {
-    async deleteRecipe(recipe) {
-        console.log('store is being asked to delete ' + recipe.id);
-        await idb.deleteRecipe(recipe.id); 
-      },
-  
-      async getRecipes() {
-        this.state.recipes = [];
-        let recipesIDB = await idb.getRecipes();
+  actions: {    
+    //Fetch all recipes in IndexedDB
+    async getRecipes(context) {
+      this.state.recipes = [];
+      let recipesIDB = [];
+      recipesIDB = await idb.getRecipes();
 
-        recipesIDB.forEach(r => {
-          this.state.recipes.push(r);
-        });
-      },
-  
-      async saveRecipe(recipe) {
-        await idb.saveRecipe(recipe);
-      }
+      recipesIDB.forEach(r => {
+        console.log("push called");
+        this.state.recipes.push(r);
+      });
+    },
+
+    //Add new recipe to IndexedDB
+    async addRecipe(recipe) {
+      await idb.addRecipe(recipe);
+    },
+
+    //Save edited recipe to IndexedDB
+    async saveRecipe(context, recipe) {
+      await idb.saveRecipe(recipe);
+    },
+
+    //Delete a recipe from IndexedDB
+    async deleteRecipe(context, recipe) {
+      alert('Inside Store deleteRecipe method - ' + JSON.stringify(recipe));
+      console.log('store is being asked to delete ' + recipe.slug);
+      await idb.deleteRecipe(recipe.slug); 
+    },
   }
 })

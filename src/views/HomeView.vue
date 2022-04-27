@@ -23,12 +23,13 @@
       </div>
     </div>
 
+    <!-- ADD NEW RECIPE - START -->
     <div class="add-recipe-popup" v-if="popupOpen">
       <div class="popup-content">
         <h2>Add new recipe</h2>
 
         <!-- Prevent this form to get submitted -->
-        <form @submit.prevent="addNewRecipe">
+        <form @submit.prevent="saveRecipe">
           <div class="group">
             <label>Title</label>
             <input type="text" v-model="newRecipe.title" />
@@ -60,7 +61,9 @@
         </form>
       </div>
     </div>
+    <!-- ADD NEW RECIPE - END -->
 
+    <!-- EDIT RECIPE - START -->
     <div class="add-recipe-popup" v-if="popupEdit">
       <div class="popup-content">
         <h2>Edit recipe</h2>
@@ -98,22 +101,19 @@
         </form>
       </div>
     </div>
+    <!-- EDIT RECIPE - END -->
+
   </div>
 </template>
 
 <script>
-//import IndexedDBService from '@/api/IndexedDBService'
-import { getters } from '@/store';
-
-// const DB_NAME = 'recipedb';
-// const DB_VERSION = 1;
-
 export default {
   name: 'HomeView',
   data() {
     return {
       newRecipe: {
         title: '',
+        slug: '',
         description: '',
         ingredients: [],
         method: [],
@@ -122,6 +122,7 @@ export default {
       },
       editRecipe: {
         title: '',
+        slug: '',
         description: '',
         ingredients: [],
         method: [],
@@ -152,89 +153,24 @@ export default {
       this.newRecipe.methodRows++;
     },
 
-    // async getDb() {
-    //   return new Promise((resolve, reject) => {	
-    //   let request = window.indexedDB.open(DB_NAME, DB_VERSION);
+    async saveRecipe() {
+      this.newRecipe.slug = this.newRecipe.title.toLowerCase().replace(/\s/g, '-');
+      console.info('Saving Recipe - ' + JSON.stringify(this.newRecipe));
+
+      await this.$store.dispatch("saveRecipe", this.newRecipe);
+      //this.recipes = this.$store.state.recipes;
+      this.$store.dispatch('getRecipes');
       
-    //   request.onerror = e => {
-    //     console.log('Error opening db', e);
-    //     reject('Error');
-    //   };
-    
-    //   request.onsuccess = e => {
-    //     resolve(e.target.result);
-    //   };
-      
-    //   request.onupgradeneeded = e => {
-    //     console.log('onupgradeneeded');
-    //     let db = e.target.result;
-    //     let objectStore = db.createObjectStore("recipes", { autoIncrement: true, keyPath:'id' });
-    //   };
-    //   });
-    // },
+      //Empty the newRecipe value and close the popup.
+      this.newRecipe = [];
+      this.togglePopup();
+    },
 
-    // async getRecipesFromDb() {
-    //   return new Promise((resolve, reject) => {
-    
-    //     let trans = this.db.transaction(['recipes'],'readonly');
-    //     trans.oncomplete = e => {
-    //       resolve(recipes);
-    //     };
-        
-    //     let store = trans.objectStore('recipes');
-    //     let recipes = [];
-        
-    //     store.openCursor().onsuccess = e => {
-    //       let cursor = e.target.result;
-    //       if (cursor) {
-    //         recipes.push(cursor.value)
-    //         cursor.continue();
-    //       }
-    //     };
-    
-    //   });
-    // },
-
-    // async addRecipe() {
-    //   this.addDisabled = true;
-    //   // random recipe for now
-    //   let recipesFromStore = this.$store.state
-    //   console.log('about to add '+JSON.stringify(recipe));
-    //   await this.addRecipeToDb(recipe);
-    //   this.recipes = await this.getRecipesFromDb();
-    //   this.addDisabled = false;      
-    // },
-
-    // async addRecipeToDb(recipe) {
-    //   return new Promise((resolve, reject) => {
-    
-    //   let trans = this.db.transaction(['recipes'],'readwrite');
-    //   trans.oncomplete = e => {
-    //     resolve();
-    //   };
-    
-    //   let store = trans.objectStore('recipes');
-    //   store.add(recipe);
-    
-    //   });
-    // },
-
-    // async deleteRecipe(id) {
-    //   await this.deleteRecipeFromDb(id);
-    //   this.recipes = await this.getRecipesFromDb();      
-    // },
-
-    // async deleteRecipeFromDb(id) {
-    //   return new Promise((resolve, reject) => {
-    //   let trans = this.db.transaction(['recipes'],'readwrite');
-    //   trans.oncomplete = e => {
-    //     resolve();
-    //   };
-    
-    //   let store = trans.objectStore('recipes');
-    //   store.delete(id);
-    //   });
-    // },
+    async deleteRecipe(recipe) {
+      console.log('delete', recipe.slug);
+      await this.$store.dispatch('deleteRecipe', recipe);
+      this.$store.dispatch('getRecipes');
+    }
   },
   computed: {
     recipes: function() {
@@ -263,6 +199,8 @@ h1 {
 .recipes {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  /* display: flex;
+  flex-direction: row; */
 }
 
 .recipes .card {
