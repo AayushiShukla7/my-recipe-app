@@ -120,14 +120,6 @@ export const IndexedDBService = {
 		});
 	},
 
-	// async addRecipe(recipe) {
-	// 	//alert('Inside IDB addRecipe method - ' + JSON.stringify(recipe));
-	// 	this.addDisabled = true;
-	// 	await this.addRecipeToDb(recipe);
-	// 	this.recipes = await this.getRecipes();
-	// 	this.addDisabled = false;      
-	// },
-
 	async addRecipe(recipe) {
 		let db = await this.getDb();
 		this.addDisabled = true;
@@ -148,7 +140,6 @@ export const IndexedDBService = {
 	},
 
 	async deleteRecipe(slug) {
-		alert('deleteRecipe: Slug --> ' + slug)
 		await this.deleteRecipeFromDb(slug);
 		this.recipes = await this.getRecipes();      
 	},

@@ -17,7 +17,6 @@ export default new Vuex.Store({
       recipesIDB = await idb.getRecipes();
 
       recipesIDB.forEach(r => {
-        console.log("push called");
         this.state.recipes.push(r);
       });
     },
@@ -34,7 +33,6 @@ export default new Vuex.Store({
 
     //Delete a recipe from IndexedDB
     async deleteRecipe(context, recipe) {
-      alert('Inside Store deleteRecipe method - ' + JSON.stringify(recipe));
       console.log('store is being asked to delete ' + recipe.slug);
       await idb.deleteRecipe(recipe.slug); 
     },

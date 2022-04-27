@@ -17,8 +17,8 @@
               <button>View</button>            
             </div>
           </router-link> -->
-          <button @click="togglePopupEdit">Edit</button>  
-          <button style="margin-left:1rem;" @click="deleteRecipe">Delete</button>
+          <button @click="editSelectedRecipe(recipe)">Edit</button>  
+          <button style="margin-left:1rem;" @click="deleteRecipe(recipe)">Delete</button>
         </div>
       </div>
     </div>
@@ -158,7 +158,6 @@ export default {
       console.info('Saving Recipe - ' + JSON.stringify(this.newRecipe));
 
       await this.$store.dispatch("saveRecipe", this.newRecipe);
-      //this.recipes = this.$store.state.recipes;
       this.$store.dispatch('getRecipes');
       
       //Empty the newRecipe value and close the popup.
@@ -167,9 +166,22 @@ export default {
     },
 
     async deleteRecipe(recipe) {
-      console.log('delete', recipe.slug);
       await this.$store.dispatch('deleteRecipe', recipe);
       this.$store.dispatch('getRecipes');
+    },
+
+    async editSelectedRecipe(recipe) {
+      console.log("Edit - " + JSON.stringify(recipe));
+
+      this.editRecipe.slug = recipe.slug;
+      this.editRecipe.title = recipe.title;
+      this.editRecipe.description = recipe.description;
+      this.editRecipe.ingredients = recipe.ingredients;
+      this.editRecipe.ingredientRows = recipe.ingredientRows;
+      this.editRecipe.method = recipe.method;
+      this.editRecipe.methodRows = recipe.methodRows;
+
+      this.togglePopupEdit();
     }
   },
   computed: {
