@@ -64,7 +64,7 @@
     <!-- ADD NEW RECIPE - END -->
 
     <!-- EDIT RECIPE - START -->
-    <div class="add-recipe-popup" v-if="popupEdit">
+    <div class="edit-recipe-popup" v-if="popupEdit">
       <div class="popup-content">
         <h2>Edit recipe</h2>
 
@@ -146,11 +146,17 @@ export default {
     },
 
     addNewIngredient() {
-      this.newRecipe.ingredientRows++;
+      if(this.popupEdit)
+        this.editRecipe.ingredientRows++;
+      else if(this.popupOpen) 
+        this.newRecipe.ingredientRows++;
     },
 
     addNewStep() {
-      this.newRecipe.methodRows++;
+      if(this.popupEdit)
+        this.editRecipe.methodRows++;
+      else if(this.popupOpen) 
+        this.newRecipe.methodRows++;
     },
 
     async saveRecipe() {
@@ -171,15 +177,17 @@ export default {
     },
 
     async editSelectedRecipe(recipe) {
-      console.log("Edit - " + JSON.stringify(recipe));
+      console.log(recipe);
 
       this.editRecipe.slug = recipe.slug;
       this.editRecipe.title = recipe.title;
       this.editRecipe.description = recipe.description;
       this.editRecipe.ingredients = recipe.ingredients;
-      this.editRecipe.ingredientRows = recipe.ingredientRows;
+      this.editRecipe.ingredientRows = recipe.ingredients.length;
       this.editRecipe.method = recipe.method;
-      this.editRecipe.methodRows = recipe.methodRows;
+      this.editRecipe.methodRows = recipe.method.length;
+
+      console.log(this.editRecipe);
 
       this.togglePopupEdit();
     }
@@ -247,6 +255,29 @@ h1 {
 
 .add-recipe-popup .popup-content {
   background-color: #081c33;
+  padding: 2rem;
+  border-radius: 1rem;
+  width: 100%;
+  max-width: 768px;
+}
+
+.edit-recipe-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  overflow: auto;
+}
+
+.edit-recipe-popup .popup-content {
+  background-color: #081c33;
+  height: 80%;
+  overflow: auto;
   padding: 2rem;
   border-radius: 1rem;
   width: 100%;
