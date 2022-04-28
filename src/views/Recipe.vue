@@ -2,7 +2,7 @@
   <div class="recipe">
       <div class="space-between">
         <router-link to="/">&lt; Back</router-link>
-        <!-- <button type="button" @click="isEditing = !isEditing" v-if="!isEditing">Inline Edit</button>         -->
+        <button type="button" @click="isEditing = !isEditing" v-if="!isEditing">Inline Edit</button>        
       </div>
 
       <div class="align-right">
@@ -29,8 +29,12 @@
               <td width="5%" style="padding-top: 5px;">
                 <label>{{ i + 1 }} - </label> 
               </td>
-              <td width="95%">
-                <input v-model="recipe.ingredients[i]" ref="recipe_ingrdnts" />
+              <td width="90%">                
+                <input v-model="recipe.ingredients[i]" ref="recipe_ingrdnts" type="text" placeholder="Ingredient" />
+              </td>
+              <td width="5%" style="padding-top: 5px; padding-left: 5px;">                
+                <span v-if="recipe.ingredients.length>1"
+                  class="float-right" style="cursor:pointer" @click="removeIngredient(i)">X</span>
               </td>
             </tr>
           </table>
@@ -54,8 +58,12 @@
               <td width="5%" style="padding-top: 5px;">
                 <label>{{ i + 1 }} - </label> 
               </td>
-              <td width="95%">
-                <textarea v-model="recipe.method[i]" ref="recipe_step" style="overflow:auto;"></textarea>
+              <td width="90%">                
+                <textarea v-model="recipe.method[i]" ref="recipe_step" type="text" placeholder="Method" style="overflow:auto;" ></textarea>
+              </td>
+              <td width="5%" style="padding-top: 5px; padding-left: 5px;">                
+                <span v-if="recipe.method.length>1"
+                  class="float-right" style="cursor:pointer" @click="removeMethod(i)">X</span>
               </td>
             </tr>
           </table>
@@ -69,8 +77,21 @@ export default {
     name: 'Recipe',
     data() {
       return {
-        isEditing: false
+        isEditing: false,
+        description: '',
+        ingredients: [],
+        method: [],
+        ingredientRows: 1,
+        methodRows: 1
       }
+    },
+    mounted() {
+      //Create a local copy of the details of this recipe
+      this.description = this.recipe.description;
+      this.ingredientRows = this.recipe.ingredientRows;
+      this.ingredients = this.recipe.ingredients;
+      this.methodRows = this.recipe.methodRows;
+      this.method = this.recipe.method;
     },
     computed:{
       recipe() {
@@ -85,28 +106,28 @@ export default {
 
       async save() {
         this.recipe.description = this.$refs['recipe_desc'].value;
+        this.recipe.ingredientRows = this.ingredientRows;
+        this.recipe.ingredients = this.ingredients;
+        this.recipe.methodRows = this.methodRows;
+        this.recipe.method = this.method;
         
         await this.saveRecipe(this.recipe);
         this.isEditing = !this.isEditing;
       },
 
-      editIngredient: function(){
-          this.recipe.ingredient = this.$refs['recipe_ingrdnts'].value;
-          this.isEditing = !this.isEditing;
+      removeIngredient(index) {
+        this.ingredients.splice(index, 1);
+        this.ingredientRows--;
       },
-
-      cancelEditIngredient: function(){
-          this.isEditing = !this.isEditing;
+      removeMethod(index) {
+        this.method.splice(index, 1);
+        this.methodRows--;
       },
 
       //IndexedDB Save
       async saveRecipe(editedRecipe) {
-        if(this.editedRecipe.slug !== "") {
-          console.info('Saving Recipe - ' + JSON.stringify(editedRecipe));
-
-          await this.$store.dispatch("saveRecipe", editedRecipe);
-          //this.$store.dispatch('getRecipes');
-        }
+        console.info('Saving Recipe - ' + JSON.stringify(editedRecipe));
+        await this.$store.dispatch("saveRecipe", editedRecipe);
       },
     }
 }
