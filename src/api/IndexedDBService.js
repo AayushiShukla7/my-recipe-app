@@ -121,6 +121,12 @@ export const IndexedDBService = {
 	},
 
 	async addRecipe(recipe) {
+		await this.addRecipeToDb(recipe);
+		this.recipes = await this.getRecipes();
+	},
+
+	async addRecipeToDb(recipe) {	
+
 		let db = await this.getDb();
 		this.addDisabled = true;
 
@@ -132,6 +138,7 @@ export const IndexedDBService = {
 		};
 	
 		let store = trans.objectStore('recipes');
+		recipe = JSON.parse(JSON.stringify(recipe));
 		store.add(recipe);
 
 		this.addDisabled = false; 
@@ -163,7 +170,7 @@ export const IndexedDBService = {
 		this.recipes = await this.getRecipes();
 	},
 
-	async saveRecipeToDb(recipe) {
+	async saveRecipeToDb(recipe) {		
 		let db = await this.getDb();
 
 		return new Promise((resolve, reject) => {

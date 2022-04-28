@@ -22,7 +22,7 @@ export default new Vuex.Store({
     },
 
     //Add new recipe to IndexedDB
-    async addRecipe(recipe) {
+    async addRecipe(context, recipe) {
       await idb.addRecipe(recipe);
     },
 

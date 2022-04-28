@@ -2,7 +2,7 @@
   <div class="recipe">
       <div class="space-between">
         <router-link to="/">&lt; Back</router-link>
-        <button type="button" @click="isEditing = !isEditing" v-if="!isEditing">Inline Edit</button>        
+        <!-- <button type="button" @click="isEditing = !isEditing" v-if="!isEditing">Inline Edit</button>         -->
       </div>
 
       <div class="align-right">
@@ -83,8 +83,10 @@ export default {
         return text.replace(/\n/g, '<br />');
       },
 
-      save() {
+      async save() {
         this.recipe.description = this.$refs['recipe_desc'].value;
+        
+        await this.saveRecipe(this.recipe);
         this.isEditing = !this.isEditing;
       },
 
@@ -95,7 +97,17 @@ export default {
 
       cancelEditIngredient: function(){
           this.isEditing = !this.isEditing;
-      }
+      },
+
+      //IndexedDB Save
+      async saveRecipe(editedRecipe) {
+        if(this.editedRecipe.slug !== "") {
+          console.info('Saving Recipe - ' + JSON.stringify(editedRecipe));
+
+          await this.$store.dispatch("saveRecipe", editedRecipe);
+          //this.$store.dispatch('getRecipes');
+        }
+      },
     }
 }
 </script>

@@ -12,11 +12,6 @@
           </router-link>
         <p>{{ recipe.description }}</p>
         <div class="row-content">
-          <!-- <router-link :to="`/recipe/${recipe.slug}`">
-            <div>
-              <button>View</button>            
-            </div>
-          </router-link> -->
           <button @click="editSelectedRecipe(recipe)">Edit</button>  
           <button style="margin-left:1rem;" @click="deleteRecipe(recipe)">Delete</button>
         </div>
@@ -29,7 +24,7 @@
         <h2>Add new recipe</h2>
 
         <!-- Prevent this form to get submitted -->
-        <form @submit.prevent="saveRecipe">
+        <form @submit.prevent="addNewRecipe">
           <div class="group">
             <label>Title</label>
             <input type="text" v-model="newRecipe.title" />
@@ -69,7 +64,7 @@
         <h2>Edit recipe</h2>
 
         <!-- Prevent this form to get submitted -->
-        <form @submit.prevent="editSelectedRecipe">
+        <form @submit.prevent="saveRecipe">
           <div class="group">
             <label>Title</label>
             <input type="text" v-model="editRecipe.title" />
@@ -159,11 +154,11 @@ export default {
         this.newRecipe.methodRows++;
     },
 
-    async saveRecipe() {
+    async addNewRecipe() {
       this.newRecipe.slug = this.newRecipe.title.toLowerCase().replace(/\s/g, '-');
-      console.info('Saving Recipe - ' + JSON.stringify(this.newRecipe));
+      console.info('Adding Recipe - ' + JSON.stringify(this.newRecipe));
 
-      await this.$store.dispatch("saveRecipe", this.newRecipe);
+      await this.$store.dispatch("addRecipe", this.newRecipe);
       this.$store.dispatch('getRecipes');
       
       //Empty the newRecipe value and close the popup.
@@ -171,14 +166,25 @@ export default {
       this.togglePopup();
     },
 
+    async saveRecipe() {
+      if(this.editRecipe.slug !== "") {
+        console.info('Saving Recipe - ' + JSON.stringify(this.editRecipe));
+
+        await this.$store.dispatch("saveRecipe", this.editRecipe);
+        this.$store.dispatch('getRecipes');
+        
+        //Empty the editRecipe value and close edit the popup.
+        this.editRecipe = [];
+        this.togglePopupEdit();
+      }
+    },
+
     async deleteRecipe(recipe) {
       await this.$store.dispatch('deleteRecipe', recipe);
       this.$store.dispatch('getRecipes');
     },
 
-    async editSelectedRecipe(recipe) {
-      console.log(recipe);
-
+    editSelectedRecipe(recipe) {
       this.editRecipe.slug = recipe.slug;
       this.editRecipe.title = recipe.title;
       this.editRecipe.description = recipe.description;
@@ -187,8 +193,7 @@ export default {
       this.editRecipe.method = recipe.method;
       this.editRecipe.methodRows = recipe.method.length;
 
-      console.log(this.editRecipe);
-
+      console.log("Edited recipe - " + JSON.stringify(this.editRecipe));
       this.togglePopupEdit();
     }
   },
