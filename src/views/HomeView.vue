@@ -155,15 +155,20 @@ export default {
     },
 
     async addNewRecipe() {
-      this.newRecipe.slug = this.newRecipe.title.toLowerCase().replace(/\s/g, '-');
-      console.info('Adding Recipe - ' + JSON.stringify(this.newRecipe));
+      if(this.newRecipe.title == "") {
+        alert("You must enter a title for this recipe!");
+      }
+      else {
+        this.newRecipe.slug = this.newRecipe.title.toLowerCase().replace(/\s/g, '-');
+        console.info('Adding Recipe - ' + JSON.stringify(this.newRecipe));
 
-      await this.$store.dispatch("addRecipe", this.newRecipe);
-      this.$store.dispatch('getRecipes');
-      
-      //Empty the newRecipe value and close the popup.
-      this.newRecipe = [];
-      this.togglePopup();
+        await this.$store.dispatch("addRecipe", this.newRecipe);
+        this.$store.dispatch('getRecipes');
+        
+        //Empty the newRecipe value and close the popup.
+        this.newRecipe = [];
+        this.togglePopup();
+      }
     },
 
     async saveRecipe() {
