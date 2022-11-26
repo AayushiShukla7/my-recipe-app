@@ -22,3 +22,5 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+> To see this in action, please visit - https://vue-idb-recipe-app.netlify.app/
